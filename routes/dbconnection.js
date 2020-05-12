@@ -1,7 +1,7 @@
 const sql = require("mssql");
 const config = {
     user: 'webuser',
-    password: 'MIaCN1S)@UR9',
+    password: 'Vicflix@123',
     server: 'NovoSrv01\\SQLEXPRESS', 
     database: 'vicflix' 
 };

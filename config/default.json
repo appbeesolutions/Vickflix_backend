@@ -5,11 +5,14 @@
   "path": "/beta_vicflix/public/videos/",
   "version": "v2.1.48",
   "connectionPool": {
-    "server": "ABHI\\MSSQLSERVER01",
-    "user": "sa",
-    "password": "abhi",
-    "database": "online_video_streaming"
+    "server": "",
+    "user": "",
+    "password": "",
+    "database": ""
   },
+  "app_link":"https://play.google.com/store",
+  "app_link_ios":"https://www.apple.com/in/ios/app-store/",
+  "ch":"beta-vicflix",
   "secret": "",
   "privatekey": "abhi",
   "publickey" : "vicflix",

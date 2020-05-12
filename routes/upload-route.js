@@ -54,12 +54,14 @@ router.post('/', (req, res) => {
             var author = req.body.author;
             var cat = req.body.cat_id;
             var sub = req.body.sub_id;
+            var userid = req.body.user_id;
 
             res.cookie("title", title, { signed: true });
             res.cookie("description", description, { signed: true });
             res.cookie("author", author, { signed: true });
             res.cookie("cat", cat, { signed: true })
             res.cookie("sub", sub, { signed: true })
+            res.cookie("userid", userid, { signed: true })
             res.send({ url: authurl })
 
         }

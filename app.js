@@ -96,6 +96,7 @@ app.use(session({
   resave: true,
   name: "Check this"
 }));
+
 app.set("views", path.join(__dirname, "views"));
 // app.set("view engine", "jade");
 var env = process.env.NODE_ENV || "development";
@@ -114,6 +115,11 @@ app.use(express.static('./'));
   '.ttf',
   '.svg',
 ];
+app.get('/terms', function(req, res) {
+  fs.readFile(__dirname + '/views/terms_condition.html', 'utf8', function(err, text){
+      res.send(text);
+  })
+  });
 app.get('*', (req, res) => {
 
   // res.redirect('https://' + req.headers.host + req.url);
@@ -127,8 +133,10 @@ app.get('*', (req, res) => {
 
 // app.use(expressJwt({secret: publicKEY, algorithms: ['RS256'],}).unless({
 //   path: [
-//       '/portal/users/login',
+//        '/portal/users/sharelink', 
+//        '/portal/users/sharelinkios',       
 //       '/portal/users/addmob',
+//       '/portal/users/login',
 //       '/portal/users/getcatlist',
 //       '/portal/users/getsubcatlist',
 //       '/portal/users/videolist',
@@ -136,6 +144,8 @@ app.get('*', (req, res) => {
 //       '/portal/users/like',
 //       '/portal/users/location',
 //       '/portal/users/share',
+//       '/portal/users/download',
+//       '/portal/users/rating',
 //       '/portal/users/forgotpassword',
 //       '/portal/users/updatepassword',
 //       '/portal/users/verifyreset'     

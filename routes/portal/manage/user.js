@@ -15,19 +15,31 @@ var Archievedstate = "Archived";
 
 
 const privateKEY = `-----BEGIN RSA PRIVATE KEY-----
-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
+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
 -----END RSA PRIVATE KEY-----`;
 
 
@@ -40,7 +52,7 @@ const signOptions = {
   issuer: i,
   subject: s,
   audience: a,
-  expiresIn: "1h",
+  expiresIn: "2h",
   algorithm: "RS256"   // RSASSA [ "RS256", "RS384", "RS512" ]
 };
 
@@ -71,6 +83,14 @@ let sendemail = (emailContent) => {
   })
 }
 
+router.post('/sharelink', async (req, res) => {
+  var link = config.get("app_link")
+  res.json({app_link : link })
+});
+router.post('/sharelinkios', async (req, res) => {
+  var link = config.get("app_link_ios")
+  res.json({app_link : link })
+});
 // login api
 router.post('/isAuhtenticated', async (req, res) => {
   console.log(req.session.user)
@@ -270,14 +290,14 @@ router.post('/addupdateuser', async (req, res, next) => {
     // console.log("effected rows", insresponse, "numberrrrrrrr", rand)
     if (insresponse.rowsAffected) {
       let host = 'https://beta.vicflix.com/#';
-      let link = host + "/resetpassword?id=" + rand + "&email=" + email;
+      let link = host + "/setpassword?id=" + rand + "&email=" + email;
       console.log('hosting', link)
 
 
       let emailContent = {
-        title: "Online Video Streaming",
-        subject: "Please confirm your Email account",
-        html: "Hello,<br> Please Click on the link to verify your email.<br><a href='" + link + "'>Click here to verify</a>",
+        title: "Vicflix",
+        subject: "Set-password Vicflix-Portal",
+        html: "Hello,<br> To Set your password first time,click the URL below.<br><a href='" + link + "'>beta.vicflix.com/set-password</a><br>If you did not request for ypur password to be set for the first time, Please ignore this email",
         email: email
       }
       sendemail(emailContent).then((emailres) => {
@@ -443,15 +463,11 @@ router.post('/forgotpassword', async (req, res, next) => {
       // let host=req.get('host');
       let host = 'https://beta.vicflix.com/#';
       let link = host + "/resetpassword?id=" + rand + "&email=" + email;
-      // let link=host+"/resetpassword?id="+rand+"&email="+email;
-      // link = "http://localhost:4200/resetpassword?id=" + rand + "&email=" + email;
-      // let htmlContent  =  '<a align="center" href="#" style="pointer-events:none;"><img src="http://dev.jitha.com/qa/portal/qb-backend/public/logos/Jitha_Logo_Tagline.png" alt="Jitha" style="display: block;margin-left: auto;margin-right: auto;width:30%;"></a><p align="left" style="font-size:12px;">OrderId : '+ orderid + '</p><table class="reportWrapperTable" cellspacing="3" cellpadding="5" width="100%" rules="rows" style="border-collapse:collapse;color:#1f2240;background-color:#ffffff"><caption style="background-color:#ffffff;color:#1f2240;margin-bottom:.5em;font-size:18pt;width:100%;border:0">Order Details</caption><thead style="color:#ffffff;background-color:#1f2240;font-weight:bold"><tr style="height:40px;"><th scope="col" style="background-color:#3F51B5;">Item(s)</th><th scope="col" style="background-color:#3F51B5">Total</th></tr></thead><tbody>';
-      // htmlContent = htmlContent +`<tr><td align="right">Grand Total</td><td align="center">${ordervalue}</td></tr>`;
-      // htmlContent = htmlContent +'</tbody></table>';
+      
       let emailContent = {
-        title: "Your JithA+ order",
-        subject: "Please confirm your Email account",
-        html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>",
+        title: "Vicflix",
+        subject: "Reset-password Vicflix-Portal",
+        html: "Hello,<br> To reset your password, click the URL below.<br><a href=" + link + ">beta.vicflix.com/resetpassword</a><br>If you did not request your password to be reset, just ignore this email and your password will continue the same.",
         email: email
       }
       // console.log(link,'qqqqqqq');
@@ -679,12 +695,22 @@ router.post('/videolist', async (req, res) => {
   let thumb = `SELECT cat1.cat_id,cat1.cat_name,cat2.sub_id,cat2.sub_name,vid.video_id,vid.video_link,vid.title,vid.description,vid.thumbnail,vid.likes,vid.dislikes,vid.views,vid.share,vid.vname,vid.rating,vid.rcount,vid.downloadcount FROM video_info as vid INNER JOIN cat_1_level_1 as cat1 on vid.cat_id = cat1.cat_id INNER JOIN cat_1_level_2 as cat2  on cat2.sub_id = vid.sub_id where [vstatus] ='A'`;
   let tres = await request.query(thumb);
   if (tres) {
-    console.log("mm", tres)
     tres.map
     res.send('200', tres.recordset)
   }
 })
 
+router.post('/videolistbycountry', async (req, res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let id = req.body.country_id;
+  let thumb = `SELECT cat1.cat_id,cat1.cat_name,cat2.sub_id,cat2.sub_name,vid.video_id,vid.video_link,vid.title,vid.description,vid.thumbnail,vid.likes,vid.dislikes,vid.views,vid.share,vid.vname,vid.rating,vid.rcount,vid.downloadcount FROM video_info as vid INNER JOIN cat_1_level_1 as cat1 on vid.cat_id = cat1.cat_id INNER JOIN cat_1_level_2 as cat2  on cat2.sub_id = vid.sub_id inner join countrys_data as cd on cd.video_id = vid.video_id where [vstatus] ='A' and [country_id] = ${id}`;
+  let tres = await request.query(thumb);
+  if (tres) {
+    tres.map
+    res.send('200', tres.recordset)
+  }
+})
 
 
 router.post('/chngthumb', async (req, res) => {
@@ -979,12 +1005,14 @@ router.post('/analytics', async (req, res) => {
   console.log("analytics api calling")
   const pool = await poolPromise;
   const request = await pool.request();
-  let data = "select sum(likes)as total_likes , sum(dislikes) as total_dislikes , sum(views)as total_views , sum(share) as total_share  from video_info";
+  let data = "select sum(likes)as total_likes , sum(dislikes) as total_dislikes , sum(share) as total_share, sum(downloadcount) as total_downloads  from video_info";
   let alldata = await request.query(data)
   let data1 = "select count(*) as tota_users from mobile_users"
   let alldata2 = await request.query(data1);
-  if (alldata2.rowsAffected) {
-    alldata.recordset.push(alldata2.recordset[0])
+  let data3 = "select count(*) as total_views from HeatMap"
+  let alldata3 = await request.query(data3);
+  if (alldata3.rowsAffected) {
+    alldata.recordset.push(alldata2.recordset[0],alldata3.recordset[0])
     console.log(alldata.recordset)
     res.status("200").json(alldata.recordset)
   } else {
@@ -993,6 +1021,40 @@ router.post('/analytics', async (req, res) => {
 });
 
 //mobile users
+router.post('/addmobileuser', async (req, res) => {
+  console.log("addmob api calling")
+  const pool = await poolPromise;
+  const request = await pool.request();
+  // let name = req.body.username ? req.body.username : "";
+  let email = req.body.email ? req.body.email : "";
+  let gender = req.body.gender ? req.body.gender : "";
+  let age = req.body.age ? req.body.age : "";
+  let uid =  req.body.countryid ? req.body.countryid : "";
+  console.log("test*******",uid)
+  let usrchck = await request.query(`Select * from mobile_users where [email] = '${email}'`);
+  if (usrchck.rowsAffected == 0) {
+    let sql = "INSERT INTO mobile_users ( [email], [gender], [age], [country_id])  VALUES ('" + email + "','" + gender + "'," + age + "," + uid + "); select SCOPE_IDENTITY() as id";
+    console.log(sql)
+    let sqlres = await request.query(sql)
+    if (sqlres.rowsAffected) {
+      console.log("mobile", sqlres.recordset, sqlres)
+      res.json({ status: '200', data: sqlres.recordset })
+    } else {
+      res.send("404")
+    }
+  } else if (usrchck.rowsAffected > 0) {
+    let sql = `update mobile_users  set [gender] = '${gender}',[age] = ${age}, [country_id] = ${uid} OUTPUT INSERTED.id where [email] = '${email}'`;
+    let sqlres = await request.query(sql)
+    console.log("*****data***", sqlres)
+    if (sqlres.rowsAffected) {
+      res.json({ status: '200', data: sqlres.recordset })
+    } else {
+      res.send('404')
+    }
+  } else {
+    res.send('404')
+  }
+});
 
 router.post('/addmob', async (req, res) => {
   console.log("addmob api calling")
@@ -1051,8 +1113,15 @@ router.post('/location', async (req, res) => {
   console.log(lat, lng)
   const query = `INSERT INTO HeatMap ([user_id],[video_link],[latitude],[longitude]) VALUES (${user_id}, '${video_link}','${lat}','${lng}')`;
   const result = await request.query(query);
-  if (result.rowsAffected) {
-    res.send('200')
+  let sql = `SELECT views FROM video_info where [video_link] = '${video_link}'`;
+  let sqlres = await request.query(sql);
+  console.log(sqlres)	
+  if (sqlres.rowsAffected > 0) {
+    var likesArrya = parseInt(sqlres.recordset[0].views) + 1;
+    var update = `UPDATE video_info SET [views] = ${likesArrya} WHERE [video_link] = '${video_link}' `;
+    let updateres = await request.query(update)
+    res.send("200")
+    console.log("record updated", updateres)
   } else {
     res.status(404).send('ERROR')
   }
@@ -1126,5 +1195,75 @@ router.post('/download', async (req, res) => {
   }
 
 })
+
+router.post('/addcountry', async (req, res) => {
+  console.log('country calling')
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let name = req.body.countryname ? req.body.countryname : "";
+  console.log(req.body)
+  let sql = "INSERT INTO countrys ([country_name]) values ('" + name +"')";
+  let sqlres = await request.query(sql);
+  if(sqlres.rowsAffected > 0) {
+    res.send('200')
+  } else {
+    res.send('error')
+  }
+});
+
+
+router.post('/allcountrys', async (req,res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let sql = 'select * from countrys'
+  let sqlres = await request.query(sql);
+  if (sqlres.rowsAffected) {
+    res.send(sqlres.recordset)
+  } else {
+    res.send('error')
+  }
+});
+
+router.post('/updatecountry', async (req,res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let country_id = req.body.country_id;
+  let country_name = req.body.country_name
+  let sql = `update countrys set [country_name] = '${country_name}' where [country_id] = ${country_id}`;
+  let sqlres = await request.query(sql);
+  if(sqlres.rowsAffected) {
+    res.send('200')
+  } else {
+    res.send('error')
+  }
+});
+
+router.post('/deletecountry', async (req,res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let country_id = req.body.country_id;
+  let sql = `delete from countrys where [country_id] = ${country_id}`;
+  let sqlres = await request.query(sql);
+  if (sqlres.rowsAffected) {
+    res.send('200')
+  } else {
+    res.send('error')
+  }
+});
+
+router.post('/getcountrys', async (req, res, next) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let role_id = 0;
+  let country_data = req.body.country_name ? req.body.country_name : "";
+  // console.log("Session ", req.session);
+  if (country_data == 0) {
+    role_id = 0;
+  }
+  let getcountrys = `SELECT * FROM countrys`;
+  // let rolevals = [role_id];
+  let roleresponse = await request.query(getcountrys);
+  res.status("200").json(roleresponse.recordset);
+});
 
 module.exports = router;
