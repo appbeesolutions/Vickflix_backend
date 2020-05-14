@@ -1,11 +1,12 @@
 const sql = require("mssql");
-const config = {
-    user: 'webuser',
-    password: 'Vicflix@123',
-    server: 'NovoSrv01\\SQLEXPRESS', 
-    database: 'vicflix' 
+const config = require('config')
+const db = { 
+    user: config.get('user'),
+    password: config.get('password'),
+    server: config.get('server'),
+    database: config.get('database')
 };
-const poolPromise =new sql.ConnectionPool(config)
+const poolPromise =new sql.ConnectionPool(db)
     .connect()
      .then (pool =>{
         console.log("connected")

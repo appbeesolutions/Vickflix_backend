@@ -4,12 +4,11 @@
   "httpsPort": 5000,
   "path": "/beta_vicflix/public/videos/",
   "version": "v2.1.48",
-  "connectionPool": {
-    "server": "",
-    "user": "",
-    "password": "",
-    "database": ""
-  },
+    "server": "NovoSrv01\\SQLEXPRESS",
+    "user": "webuser",
+    "password": "Vicflix@123",
+    "database": "vicflix",
+  
   "app_link":"https://play.google.com/store",
   "app_link_ios":"https://www.apple.com/in/ios/app-store/",
   "ch":"beta-vicflix",
@@ -17,7 +16,6 @@
   "privatekey": "abhi",
   "publickey" : "vicflix",
   "authkey": "",
-  "email": "onlinevideostreaming2@gmail.com",
-  "email_password": "qwerty123@",
+  "gkey": "j8e3!X#7$4!8e?x",
   "email_logo": ""
 }

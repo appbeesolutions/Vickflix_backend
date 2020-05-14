@@ -7,6 +7,7 @@ const { sql, poolPromise } = require('../../dbconnection');
 const nodemailer = require("nodemailer");
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+var crypto = require("crypto");
 // var md5 = require('md5')
 var Activestate = "Active";
 var InActivestate = "New";
@@ -55,19 +56,55 @@ const signOptions = {
   expiresIn: "2h",
   algorithm: "RS256"   // RSASSA [ "RS256", "RS384", "RS512" ]
 };
+const key = config.get('gkey')
 
+
+// function encrypt(text){
+//   console.log(text)
+// var mykey = crypto.createCipher('aes-128-cbc', key);
+// var mystr = mykey.update(text, 'utf8', 'hex')
+// mystr += mykey.final('hex');
+// return mystr
+// }
+// router.post('/crypto', async(req,res) => {
+//   const pool = await poolPromise;
+//   const request = await pool.request();
+//   let email = req.body.email;
+//   let clipass = req.body.pass;
+//   let password = encrypt(clipass)
+//   console.log(password)
+//   let insertdata = `INSERT INTO gmail_info ([gmail_id],[password]) VALUES ('${email}','${password}')`;
+//   let datares = await request.query(insertdata)
+//   if (datares.rowsAffected > 0) {
+//     res.send('200')
+//   }
+// })
+
+
+function decrypt(text){
+  var decipher = crypto.createDecipher('aes-128-cbc',key)
+  var dec = decipher.update(text,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+}
 /*email sent*/
-let sendemail = (emailContent) => {
+let sendemail = async(emailContent) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let ginfo = `select [gmail_id],[password] from gmail_info`;
+  let infores = await request.query(ginfo)
+  let gmail = infores.recordset[0].gmail_id;
+  let password = decrypt(infores.recordset[0].password)
   return new Promise((resolve, reject) => {
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: config.get('email'),
-        pass: config.get('email_password')
+        user: gmail,
+        pass: password
       }
     });
     var mailOptions = {
-      from: config.get('email'),
+      from: gmail,
       to: emailContent.email,
       subject: emailContent.subject,
       html: emailContent.html
@@ -85,11 +122,11 @@ let sendemail = (emailContent) => {
 
 router.post('/sharelink', async (req, res) => {
   var link = config.get("app_link")
-  res.json({app_link : link })
+  res.json({ app_link: link })
 });
 router.post('/sharelinkios', async (req, res) => {
   var link = config.get("app_link_ios")
-  res.json({app_link : link })
+  res.json({ app_link: link })
 });
 // login api
 router.post('/isAuhtenticated', async (req, res) => {
@@ -202,8 +239,8 @@ router.post('/getroles', async (req, res, next) => {
     res.status("200").json(roleresponse.recordset);
   }
   // console.log("Session ", req.session);
-  
- 
+
+
 });
 
 
@@ -338,20 +375,20 @@ router.post('/getuserlist', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
   let data = req.body.role;
-  console.log("data",req.body)
+  console.log("data", req.body)
   let A = 'A';
   if (data == 3) {
     let userquery = `SELECT  tpu.id, tpu.name, tpu.mobile, tpu.email, tpu.status, tr.role FROM t_portal_users as tpu INNER JOIN t_roles as tr ON tpu.role_id = tr.id where [ustatus] = '${A}' and role_id != 3`;
-  let response = await request.query(userquery);
-  if (response) {
-    res.status("200").json(response.recordset)
-  }
+    let response = await request.query(userquery);
+    if (response) {
+      res.status("200").json(response.recordset)
+    }
   } else if (data == 2) {
     let userquery = `SELECT  tpu.id, tpu.name, tpu.mobile, tpu.email, tpu.status, tr.role FROM t_portal_users as tpu INNER JOIN t_roles as tr ON tpu.role_id = tr.id where [ustatus] = '${A}' and role_id != 3 and role_id != 2`;
-  let response = await request.query(userquery);
-  if (response) {
-    res.status("200").json(response.recordset)
-  }
+    let response = await request.query(userquery);
+    if (response) {
+      res.status("200").json(response.recordset)
+    }
   }
 });
 
@@ -463,7 +500,7 @@ router.post('/forgotpassword', async (req, res, next) => {
       // let host=req.get('host');
       let host = 'https://beta.vicflix.com/#';
       let link = host + "/resetpassword?id=" + rand + "&email=" + email;
-      
+
       let emailContent = {
         title: "Vicflix",
         subject: "Reset-password Vicflix-Portal",
@@ -605,6 +642,18 @@ router.post('/addsubcat', async (req, res, next) => {
 
 });
 
+router.post('/getsubcatlist_ios', async (req, res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+  // let userquery = 'SELECT * FROM cat_1_level_2'
+  let userquery = 'SELECT distinct  sub.sub_id, sub.sub_name, cat.cat_name FROM cat_1_level_2 AS sub INNER JOIN cat_1_level_1 as cat on cat.cat_id = sub.cat_id Inner join video_info as vid on sub.sub_id = vid.sub_id';
+  let response = await request.query(userquery);
+  if (response) {
+    console.log("mmmm", response)
+    res.status("200").json(response.recordset);
+  }
+  console.log(response);
+});
 
 router.post('/getsubcatlist', async (req, res) => {
   const pool = await poolPromise;
@@ -681,12 +730,11 @@ router.post('/dashboardvideolist', async (req, res) => {
       console.log("sub is:", sub);
       let subcat = `SELECT * FROM video_info WHERE [sub_id] = ${sub.sub_id} AND [vstatus] = 'A'`;
       let res1 = await request.query(subcat)
-      sub.video = res1.recordset
+      sub.video = res1.recordset;
       senddata.push(sub || [])
     }
   }
   res.send('200', senddata);
-
 })
 
 router.post('/videolist', async (req, res) => {
@@ -850,18 +898,25 @@ router.post('/like', async (req, res, err) => {
   console.log("api calling")
   const pool = await poolPromise;
   const request = await pool.request();
-  let id = req.body.videoLink ? req.body.videoLink : "";
+  let id = req.body.videoId ? req.body.videoId : "";
   let status = req.body.status ? req.body.status : "";
-  console.log(id, status)
+  let mob_user_id = req.body.userId ? req.body.userId : "";
+  console.log(req.body)
   if (status == 'liked') {
-    let sql = `SELECT likes FROM video_info where [video_link] = '${id}' `;
+    let checkdata = `select [mob_user_id], [video_id] from video_likes where [mob_user_id] = ${mob_user_id} AND [video_id] = ${id}`;
+    let resdata = await request.query(checkdata)
+    if (resdata.rowsAffected == 0) {
+      let insertlike = `INSERT INTO video_likes ( [mob_user_id] , [video_id] ) VALUES (${mob_user_id},${id})`;
+      let insertres = await request.query(insertlike)
+    }
+    let sql = `SELECT likes FROM video_info where [video_id] = ${id} `;
     let sqlres = await request.query(sql);
     console.log(sqlres)
     if (sqlres.rowsAffected > 0) {
       console.log("incommng")
       var likesArrya = (sqlres.recordset[0].likes) + 1;
       console.log(likesArrya)
-      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_link] = '${id}' `;
+      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_id] = ${id} `;
       let updateres = await request.query(update, likesArrya)
       res.send("200")
       console.log("record updated", updateres)
@@ -870,11 +925,11 @@ router.post('/like', async (req, res, err) => {
     }
   } else if (status == 'unLiked') {
     console.log("api unliked")
-    let sql = `SELECT likes FROM video_info where [video_link] = '${id}' `;
+    let sql = `SELECT likes FROM video_info where [video_id] = ${id} `;
     let sqlres = await request.query(sql);
     if (sqlres.rowsAffected > 0) {
       var likesArrya = (sqlres.recordset[0].likes) - 1;
-      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_link] = '${id}' `;
+      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_id] = ${id} `;
       let updateres = await request.query(update, likesArrya)
       res.send("200")
       console.log("record updated", updateres)
@@ -883,15 +938,15 @@ router.post('/like', async (req, res, err) => {
     }
   } else if (status == 'disLikeToLike') {
     console.log("disLikeToLike")
-    let sql = `SELECT likes FROM video_info where [video_link] = '${id}' `;
+    let sql = `SELECT likes FROM video_info where [video_id] = ${id} `;
     let sqlres = await request.query(sql);
     if (sqlres.rowsAffected > 0) {
       var likesArrya = (sqlres.recordset[0].likes) + 1;
-      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_link] = '${id}' `;
+      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_id] = ${id} `;
       let updateres = await request.query(update, likesArrya)
       console.log("record updated", updateres)
     }
-    let sqld = `SELECT dislikes FROM video_info where [video_link] = '${id}' `;
+    let sqld = `SELECT dislikes FROM video_info where [video_id] = ${id} `;
     let sqlresd = await request.query(sqld);
     console.log(sqlresd)
     if (sqlresd.recordset[0].dislikes == 0) {
@@ -899,7 +954,7 @@ router.post('/like', async (req, res, err) => {
     } else if (sqlresd.rowsAffected > 0) {
       var likesArryad = (sqlresd.recordset[0].dislikes) - 1;
       console.log("data", likesArryad)
-      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_link] = '${id}' `;
+      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_id] = ${id} `;
       let updateresd = await request.query(updated, likesArryad)
       res.send("200")
       console.log("record updated", updateresd)
@@ -907,12 +962,18 @@ router.post('/like', async (req, res, err) => {
       res.send('400')
     }
   } else if (status == 'disliked') {
-    let sqld = `SELECT dislikes FROM video_info where [video_link] = '${id}' `;
+    let checkdata = `select [mob_user_id], [video_id] from dislike where [mob_user_id] = ${mob_user_id} and [video_id] = ${id}`;
+    let resdata = await request.query(checkdata)
+    if (resdata.rowsAffected == 0) {
+      let insertlike = `INSERT INTO dislike ( [mob_user_id] , [video_id] ) VALUES (${mob_user_id},${id})`;
+      let insertres = await request.query(insertlike)
+    }
+    let sqld = `SELECT dislikes FROM video_info where [video_id] = ${id} `;
     let sqlresd = await request.query(sqld);
     console.log(sqlresd)
     if (sqlresd.rowsAffected > 0) {
       var likesArryad = (sqlresd.recordset[0].dislikes) + 1;
-      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_link] = '${id}' `;
+      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_id] = ${id} `;
       let updateresd = await request.query(updated, likesArryad)
       res.send("200")
       console.log("record updated", updateresd)
@@ -920,12 +981,12 @@ router.post('/like', async (req, res, err) => {
       res.send('400')
     }
   } else if (status == 'unDislike') {
-    let sqld = `SELECT dislikes FROM video_info where [video_link] = '${id}' `;
+    let sqld = `SELECT dislikes FROM video_info where [video_id] = ${id} `;
     let sqlresd = await request.query(sqld);
     console.log(sqlresd)
     if (sqlresd.rowsAffected > 0) {
       var likesArryad = (sqlresd.recordset[0].dislikes) - 1;
-      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_link] = '${id}' `;
+      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_id] = ${id} `;
       let updateresd = await request.query(updated, likesArryad)
       res.send("200")
       console.log("record updated", updateresd)
@@ -933,22 +994,22 @@ router.post('/like', async (req, res, err) => {
       res.send('400')
     }
   } else if (status == 'likeToDislike') {
-    let sqld = `SELECT dislikes FROM video_info where [video_link] = '${id}' `;
+    let sqld = `SELECT dislikes FROM video_info where [video_id] = ${id} `;
     let sqlresd = await request.query(sqld);
     console.log(sqlresd)
     if (sqlresd.rowsAffected > 0) {
       var likesArryad = (sqlresd.recordset[0].dislikes) + 1;
-      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_link] = '${id}' `;
+      var updated = `UPDATE video_info SET [dislikes] = ${likesArryad} WHERE [video_id] = ${id} `;
       let updateresd = await request.query(updated, likesArryad)
       console.log("record updated", updateresd)
     }
-    let sql = `SELECT likes FROM video_info where [video_link] = '${id}' `;
+    let sql = `SELECT likes FROM video_info where [video_id] = ${id} `;
     let sqlres = await request.query(sql);
     if (sqlres.recordset[0].likes == 0) {
-      res, send('200')
+      res.send('200')
     } else if (sqlres.rowsAffected > 0) {
       var likesArrya = (sqlres.recordset[0].likes) - 1;
-      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_link] = '${id}' `;
+      var update = `UPDATE video_info SET [likes] = ${likesArrya} WHERE [video_id] = ${id} `;
       let updateres = await request.query(update, likesArrya)
       res.send("200")
       console.log("record updated", updateres)
@@ -965,15 +1026,21 @@ router.post('/share', async (req, res) => {
   console.log("api calling")
   const pool = await poolPromise;
   const request = await pool.request();
-  let id = req.body.videoLink ? req.body.videoLink : "";
-  // let status = req.body.status ? req.body.status : "";
   console.log(req.body)
-  let sql = `SELECT share FROM video_info where [video_link] = '${id}'  `;
+  let id = req.body.videoId ? req.body.videoId : "";
+  let mob_user_id = req.body.userId ? req.body.userId : "";
+  let checkdata = `select [mob_user_id], [video_id] from share where [mob_user_id] = ${mob_user_id} and [video_id] = ${id}`;
+  let resdata = await request.query(checkdata)
+  if (resdata.rowsAffected == 0) {
+    let insertlike = `INSERT INTO share ( [mob_user_id] , [video_id] ) VALUES (${mob_user_id},${id})`;
+    let insertres = await request.query(insertlike)
+  }
+  let sql = `SELECT share FROM video_info where [video_id] = ${id}  `;
   let sqlres = await request.query(sql);
   if (sqlres.rowsAffected > 0) {
     var likesArrya = parseInt(sqlres.recordset[0].share) + 1;
     console.log("****adadaw*****", likesArrya, sqlres.recordset[0].share)
-    var update = `UPDATE video_info SET [share] = ${likesArrya} WHERE [video_link] = '${id}'`;
+    var update = `UPDATE video_info SET [share] = ${likesArrya} WHERE [video_id] = ${id}`;
     let updateres = await request.query(update)
     res.send("200")
     console.log("record updated", updateres)
@@ -988,6 +1055,11 @@ router.post('/views', async (req, res) => {
   const request = await pool.request();
   let id = req.body.video_id ? req.body.video_id : "";
   let status = req.body.status ? req.body.status : "";
+  // let mob_user_id = req.body.user_id ? req.body.user_id : "";
+  // let videoid = req.body.videoid ? req.body.videoid : "";
+  // let insertlike = `INSERT INTO views ( [mob_user_id] , [video_id] ) VALUES (${mob_user_id},${videoid})`;
+  // let insertres = await request.query(insertlike)
+  // console.log(insertres)
   let sql = `SELECT likes FROM video_info where [video_id] = ${id}  `;
   let sqlres = await request.query(sql);
   if (sqlres.rowsAffected > 0) {
@@ -1012,7 +1084,7 @@ router.post('/analytics', async (req, res) => {
   let data3 = "select count(*) as total_views from HeatMap"
   let alldata3 = await request.query(data3);
   if (alldata3.rowsAffected) {
-    alldata.recordset.push(alldata2.recordset[0],alldata3.recordset[0])
+    alldata.recordset.push(alldata2.recordset[0], alldata3.recordset[0])
     console.log(alldata.recordset)
     res.status("200").json(alldata.recordset)
   } else {
@@ -1021,7 +1093,8 @@ router.post('/analytics', async (req, res) => {
 });
 
 //mobile users
-router.post('/addmobileuser', async (req, res) => {
+
+router.post('/addmob_android', async (req, res) => {
   console.log("addmob api calling")
   const pool = await poolPromise;
   const request = await pool.request();
@@ -1029,11 +1102,11 @@ router.post('/addmobileuser', async (req, res) => {
   let email = req.body.email ? req.body.email : "";
   let gender = req.body.gender ? req.body.gender : "";
   let age = req.body.age ? req.body.age : "";
-  let uid =  req.body.countryid ? req.body.countryid : "";
-  console.log("test*******",uid)
+  let device_id = 1;
+  console.log(req.body)
   let usrchck = await request.query(`Select * from mobile_users where [email] = '${email}'`);
   if (usrchck.rowsAffected == 0) {
-    let sql = "INSERT INTO mobile_users ( [email], [gender], [age], [country_id])  VALUES ('" + email + "','" + gender + "'," + age + "," + uid + "); select SCOPE_IDENTITY() as id";
+    let sql = "INSERT INTO mobile_users ( [email], [gender], [age], [device])  VALUES ('" + email + "','" + gender + "'," + age + "," + device_id + "); select SCOPE_IDENTITY() as id";
     console.log(sql)
     let sqlres = await request.query(sql)
     if (sqlres.rowsAffected) {
@@ -1043,7 +1116,7 @@ router.post('/addmobileuser', async (req, res) => {
       res.send("404")
     }
   } else if (usrchck.rowsAffected > 0) {
-    let sql = `update mobile_users  set [gender] = '${gender}',[age] = ${age}, [country_id] = ${uid} OUTPUT INSERTED.id where [email] = '${email}'`;
+    let sql = `update mobile_users  set [gender] = '${gender}',[age] = ${age} OUTPUT INSERTED.id where [email] = '${email}'`;
     let sqlres = await request.query(sql)
     console.log("*****data***", sqlres)
     if (sqlres.rowsAffected) {
@@ -1064,10 +1137,11 @@ router.post('/addmob', async (req, res) => {
   let email = req.body.email ? req.body.email : "";
   let gender = req.body.gender ? req.body.gender : "";
   let age = req.body.age ? req.body.age : "";
+  let device_id = 2;
   console.log(req.body)
   let usrchck = await request.query(`Select * from mobile_users where [email] = '${email}'`);
   if (usrchck.rowsAffected == 0) {
-    let sql = "INSERT INTO mobile_users ( [email], [gender], [age])  VALUES ('" + email + "','" + gender + "'," + age + "); select SCOPE_IDENTITY() as id";
+    let sql = "INSERT INTO mobile_users ( [email], [gender], [age], [device])  VALUES ('" + email + "','" + gender + "'," + age + "," + device_id + "); select SCOPE_IDENTITY() as id";
     console.log(sql)
     let sqlres = await request.query(sql)
     if (sqlres.rowsAffected) {
@@ -1106,19 +1180,28 @@ router.post('/location', async (req, res) => {
   console.log("location api calling")
   const pool = await poolPromise;
   const request = await pool.request();
-  const user_id = req.body.user_id;
-  const video_link = req.body.videoLink;
+  const user_id = req.body.userId;
+  const video_id = req.body.videoId;
   const lat = req.body.lattitude;
   const lng = req.body.longittude;
+  console.log(req.body)
+  let checkdata = `select [mob_user_id], [video_id] from views where [mob_user_id] = ${user_id} and [video_id] = ${video_id}`;
+  let resdata = await request.query(checkdata)
+  console.log(req.body)
+  if (resdata.rowsAffected == 0) {
+    let insertlike = `INSERT INTO views ( [mob_user_id] , [video_id] ) VALUES (${user_id},${video_id})`;
+    let insertres = await request.query(insertlike)
+    console.log(req.body)
+  }
   console.log(lat, lng)
-  const query = `INSERT INTO HeatMap ([user_id],[video_link],[latitude],[longitude]) VALUES (${user_id}, '${video_link}','${lat}','${lng}')`;
+  const query = `INSERT INTO HeatMap ([user_id],[video_link],[latitude],[longitude]) VALUES (${user_id}, '${video_id}','${lat}','${lng}')`;
   const result = await request.query(query);
-  let sql = `SELECT views FROM video_info where [video_link] = '${video_link}'`;
+  let sql = `SELECT views FROM video_info where [video_link] = ${video_id}`;
   let sqlres = await request.query(sql);
-  console.log(sqlres)	
+  console.log(sqlres)
   if (sqlres.rowsAffected > 0) {
     var likesArrya = parseInt(sqlres.recordset[0].views) + 1;
-    var update = `UPDATE video_info SET [views] = ${likesArrya} WHERE [video_link] = '${video_link}' `;
+    var update = `UPDATE video_info SET [views] = ${likesArrya} WHERE [video_id] = ${video_id} `;
     let updateres = await request.query(update)
     res.send("200")
     console.log("record updated", updateres)
@@ -1144,24 +1227,24 @@ router.post('/rating', async (req, res, err) => {
   console.log("rating api calling")
   const pool = await poolPromise;
   const request = await pool.request();
-  let id = req.body.video_link;
+  let id = req.body.videoId;
   let rating = req.body.rating;
-  let sql = `SELECT rating FROM video_info where [video_link] = '${id}'`;
+  let sql = `SELECT rating FROM video_info where [video_id] = ${id}`;
   let sqlres = await request.query(sql);
-  console.log("Rating",req.body, sqlres)
+  console.log("Rating", req.body, sqlres)
   if (sqlres.rowsAffected > 0) {
     var likesArrya = parseFloat(sqlres.recordset[0].rating) + parseFloat(`${rating}`);
     console.log("asdsdasd", likesArrya)
-    var update = `UPDATE video_info SET [rating] = ${likesArrya} WHERE [video_link] ='${id}' `;
+    var update = `UPDATE video_info SET [rating] = ${likesArrya} WHERE [video_id] =${id} `;
     let updateres = await request.query(update)
     console.log("updated rating", updateres)
-    let ratingcount = `SELECT rcount FROM video_info where [video_link] = '${id}'`;
+    let ratingcount = `SELECT rcount FROM video_info where [video_id] = ${id}`;
     let rcountres = await request.query(ratingcount)
     console.log("***rcount***", rcountres)
     if (rcountres.rowsAffected > 0) {
       var incr = parseInt(rcountres.recordset[0].rcount) + 1;
       console.log("***rcount***", incr)
-      var rupdate = `UPDATE video_info SET [rcount] = ${incr} WHERE [video_link] = '${id}' `;
+      var rupdate = `UPDATE video_info SET [rcount] = ${incr} WHERE [video_id] = ${id} `;
       let rupdateres = await request.query(rupdate)
       if (rupdateres.rowsAffected) {
         res.send('200')
@@ -1169,24 +1252,33 @@ router.post('/rating', async (req, res, err) => {
         throw err;
       }
     } else {
-      throw err;    }
+      throw err;
+    }
   } else {
-    throw err;  }
+    throw err;
+  }
 });
 
 
 router.post('/download', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
-  let id = req.body.videoLink ? req.body.videoLink : "";
-  // let status = req.body.status ? req.body.status : "";
+  let id = req.body.videoId ? req.body.videoId : "";
+  let mob_user_id = req.body.userId ? req.body.userId : "";
   console.log(req.body)
-  let sql = `SELECT downloadcount FROM video_info where [video_link] = '${id}'  `;
+  let checkdata = `select [mob_user_id], [video_id] from download where [mob_user_id] = ${mob_user_id} AND [video_id] = ${id}`;
+  let resdata = await request.query(checkdata)
+  if (resdata.rowsAffected == 0) {
+    let insertlike = `INSERT INTO download ( [mob_user_id] , [video_id] ) VALUES (${mob_user_id},${id})`;
+    let insertres = await request.query(insertlike)
+  }
+  console.log(req.body)
+  let sql = `SELECT downloadcount FROM video_info where [video_id] = ${id}  `;
   let sqlres = await request.query(sql);
   if (sqlres.rowsAffected > 0) {
     var likesArrya = parseInt(sqlres.recordset[0].downloadcount) + 1;
     console.log("****adadaw*****", likesArrya, sqlres.recordset[0].downloadcount)
-    var update = `UPDATE video_info SET [downloadcount] = ${likesArrya} WHERE [video_link] = '${id}'`;
+    var update = `UPDATE video_info SET [downloadcount] = ${likesArrya} WHERE [video_id] = ${id}`;
     let updateres = await request.query(update)
     console.log("record updated", updateres)
     res.send('200')
@@ -1202,9 +1294,9 @@ router.post('/addcountry', async (req, res) => {
   const request = await pool.request();
   let name = req.body.countryname ? req.body.countryname : "";
   console.log(req.body)
-  let sql = "INSERT INTO countrys ([country_name]) values ('" + name +"')";
+  let sql = "INSERT INTO countrys ([country_name]) values ('" + name + "')";
   let sqlres = await request.query(sql);
-  if(sqlres.rowsAffected > 0) {
+  if (sqlres.rowsAffected > 0) {
     res.send('200')
   } else {
     res.send('error')
@@ -1212,7 +1304,7 @@ router.post('/addcountry', async (req, res) => {
 });
 
 
-router.post('/allcountrys', async (req,res) => {
+router.post('/allcountrys', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
   let sql = 'select * from countrys'
@@ -1224,21 +1316,21 @@ router.post('/allcountrys', async (req,res) => {
   }
 });
 
-router.post('/updatecountry', async (req,res) => {
+router.post('/updatecountry', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
   let country_id = req.body.country_id;
   let country_name = req.body.country_name
   let sql = `update countrys set [country_name] = '${country_name}' where [country_id] = ${country_id}`;
   let sqlres = await request.query(sql);
-  if(sqlres.rowsAffected) {
+  if (sqlres.rowsAffected) {
     res.send('200')
   } else {
     res.send('error')
   }
 });
 
-router.post('/deletecountry', async (req,res) => {
+router.post('/deletecountry', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
   let country_id = req.body.country_id;
@@ -1265,5 +1357,6 @@ router.post('/getcountrys', async (req, res, next) => {
   let roleresponse = await request.query(getcountrys);
   res.status("200").json(roleresponse.recordset);
 });
+
 
 module.exports = router;
