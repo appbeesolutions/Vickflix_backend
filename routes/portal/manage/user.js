@@ -48,37 +48,51 @@ FQKm3eVBEN5lpTxWrKfIDzbIi0XZbUPYx9L+SY+qexaqYzZ68bczlg==
 const jwssecret = config.get('privatekey');
 const i = 'AppBee Tech';
 const s = 'some@user.com';
-const a = 'Herdman';
+const a = 'AppBee';
 const signOptions = {
   issuer: i,
   subject: s,
   audience: a,
-  expiresIn: "2h",
+  expiresIn: config.get('expiresIn'),
   algorithm: "RS256"   // RSASSA [ "RS256", "RS384", "RS512" ]
 };
 const key = config.get('gkey')
 
 
-// function encrypt(text){
-//   console.log(text)
-// var mykey = crypto.createCipher('aes-128-cbc', key);
-// var mystr = mykey.update(text, 'utf8', 'hex')
-// mystr += mykey.final('hex');
-// return mystr
-// }
-// router.post('/crypto', async(req,res) => {
-//   const pool = await poolPromise;
-//   const request = await pool.request();
-//   let email = req.body.email;
-//   let clipass = req.body.pass;
-//   let password = encrypt(clipass)
-//   console.log(password)
-//   let insertdata = `INSERT INTO gmail_info ([gmail_id],[password]) VALUES ('${email}','${password}')`;
-//   let datares = await request.query(insertdata)
-//   if (datares.rowsAffected > 0) {
-//     res.send('200')
-//   }
-// })
+function encrypt(text){
+  console.log(text)
+var mykey = crypto.createCipher('aes-128-cbc', key);
+var mystr = mykey.update(text, 'utf8', 'hex')
+mystr += mykey.final('hex');
+return mystr
+}
+router.post('/cryptopass', async(req,res,next) => {
+  console.log("crypto api calling")
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let clipass = req.body.password;
+  let password = encrypt(clipass)
+  let test_email = 'supreeth.bhat@gmail.com';
+  console.log(password)
+  let insertdata = `update gmail_info set [password] = '${password}'`;
+  let datares = await request.query(insertdata)
+  console.log("password updated")
+  if (datares.rowsAffected > 0) {
+      let emailContent = {
+        title: "Vicflix",
+        subject: "SMTP-test",
+        html: "Hello,<br> Your SMTP gmail account credentials have been set successfully on Vicflix portal",
+        email: test_email
+      }
+      sendemail(emailContent).then((emailres) => {
+        console.log(emailres)
+        res.send("200");
+      }).catch(error => {
+        res.send("400")
+        // next(error || new Error('unknown'))
+      })
+  }
+});
 
 
 function decrypt(text){
@@ -142,41 +156,42 @@ router.post('/logout', async (req, res) => {
 router.post('/login', async (req, res) => {
   console.log("api calling")
   const pool = await poolPromise;
-  const request = await pool.request();
-  if (!req.body.email || !req.body.password) return res.status(400).send("Invalid email or password");
+  const request = await pool.request();  if (!req.body.email || !req.body.password) return res.status(400).send("Invalid email or password");
   var Active = "Active";
-  let loginquery = `SELECT id,status,role_id,email FROM [t_portal_users] WHERE [email] = '${req.body.email}' and [password]=(HashBytes('md5','${req.body.password}' )) and [status]= 'Active' and [ustatus] = 'A' `;
-  // console.log("data", loginquery)
-  let response = await request.query(loginquery);
-  // console.log("data", response)
-  if (response) {
-    if (response.recordset[0]) {
-      let payload = {
-        id: response.recordset[0].id,
-        email: response.recordset[0].email,
-        role_id: response.recordset[0].role_id,
-        status: response.recordset[0].status
-        // org_category:response.org_category
+  let loginquery = `SELECT id,status,role_id,email FROM [t_portal_users] WHERE [email] = @emailId and [password]=(HashBytes('md5',@securedPass )) and [status]= @Active and [ustatus] = @A; `;
+  request.input('emailId',sql.VarChar,req.body.email)
+  request.input('securedPass',sql.VarChar,req.body.password)
+  request.input('Active',sql.VarChar,Active)
+  request.input('A',sql.VarChar,'A')
+  let response = await request.query(loginquery)
+  console.log(response)
+      if (response.rowsAffected > 0) {
+        let payload = {
+          id: response.recordset[0].id,
+          email: response.recordset[0].email,
+          role_id: response.recordset[0].role_id,
+          status: response.recordset[0].status
+          // org_category:response.org_category
+        }
+        console.log("data1", payload)
+        let token = jwt.sign(payload, privateKEY, signOptions);
+        res.json({
+          success: true,
+          message: 'Login success',
+          token: token,
+          RawData: response.recordset,
+          // orgcount:response.length
+        });
+      } else {
+        res.json({
+          success: false,
+          message: 'Invalid credentials',
+          token: "",
+          RawData: response
+        });
       }
-      console.log("data1", payload)
-      let token = jwt.sign(payload, privateKEY, signOptions);
-      res.json({
-        success: true,
-        message: 'Login success',
-        token: token,
-        RawData: response.recordset,
-        // orgcount:response.length
-      });
-    } else {
-      res.json({
-        success: false,
-        message: 'Invalid credentials',
-        token: "",
-        RawData: response
-      });
-    }
-  }
 })
+
 
 
 router.post('/moblogin', async (req, res, next) => {
@@ -326,7 +341,7 @@ router.post('/addupdateuser', async (req, res, next) => {
     let insresponse = await request.query(insertQuery);
     // console.log("effected rows", insresponse, "numberrrrrrrr", rand)
     if (insresponse.rowsAffected) {
-      let host = 'https://beta.vicflix.com/#';
+      let host = config.get('host_link');
       let link = host + "/setpassword?id=" + rand + "&email=" + email;
       console.log('hosting', link)
 
@@ -334,7 +349,7 @@ router.post('/addupdateuser', async (req, res, next) => {
       let emailContent = {
         title: "Vicflix",
         subject: "Set-password Vicflix-Portal",
-        html: "Hello,<br> To Set your password first time,click the URL below.<br><a href='" + link + "'>beta.vicflix.com/set-password</a><br>If you did not request for ypur password to be set for the first time, Please ignore this email",
+        html: "Hello,<br> To Set your password first time,click the URL below.<br><a href='" + link + "'>vicflix.com/set-password</a><br>If you did not request for ypur password to be set for the first time, Please ignore this email",
         email: email
       }
       sendemail(emailContent).then((emailres) => {
@@ -498,13 +513,13 @@ router.post('/forgotpassword', async (req, res, next) => {
     resetpassword(email, rand).then((reset) => {
       console.log(reset, "email resetreset");
       // let host=req.get('host');
-      let host = 'https://beta.vicflix.com/#';
+      let host = config.get('host_link');
       let link = host + "/resetpassword?id=" + rand + "&email=" + email;
 
       let emailContent = {
         title: "Vicflix",
         subject: "Reset-password Vicflix-Portal",
-        html: "Hello,<br> To reset your password, click the URL below.<br><a href=" + link + ">beta.vicflix.com/resetpassword</a><br>If you did not request your password to be reset, just ignore this email and your password will continue the same.",
+        html: "Hello,<br> To reset your password, click the URL below.<br><a href=" + link + ">vicflix.com/resetpassword</a><br>If you did not request your password to be reset, just ignore this email and your password will continue the same.",
         email: email
       }
       // console.log(link,'qqqqqqq');
@@ -646,7 +661,7 @@ router.post('/getsubcatlist_ios', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
   // let userquery = 'SELECT * FROM cat_1_level_2'
-  let userquery = 'SELECT distinct  sub.sub_id, sub.sub_name, cat.cat_name FROM cat_1_level_2 AS sub INNER JOIN cat_1_level_1 as cat on cat.cat_id = sub.cat_id Inner join video_info as vid on sub.sub_id = vid.sub_id';
+  let userquery = `SELECT distinct  sub.sub_id, sub.sub_name, cat.cat_name FROM cat_1_level_2 AS sub INNER JOIN cat_1_level_1 as cat on cat.cat_id = sub.cat_id Inner join video_info as vid on sub.sub_id = vid.sub_id  where vid.vstatus = 'A' `;
   let response = await request.query(userquery);
   if (response) {
     console.log("mmmm", response)
@@ -730,7 +745,18 @@ router.post('/dashboardvideolist', async (req, res) => {
       console.log("sub is:", sub);
       let subcat = `SELECT * FROM video_info WHERE [sub_id] = ${sub.sub_id} AND [vstatus] = 'A'`;
       let res1 = await request.query(subcat)
+      // console.log(res1.recordset[0].title)
+      // let replacedData = res1.recordset[0].title.replace(/\\/g,"'")
+      // console.log(replacedData)
       sub.video = res1.recordset;
+      sub.video.forEach((element,index) => {
+        console.log('ELEMENTS',element)
+        let temptitleInfo = element.title.replace(/\\/g,"'")
+        sub.video[index]['title'] = temptitleInfo
+        let tempdescriptionInfo = element.description.replace(/\\/g,"'")
+        sub.video[index]['description'] = tempdescriptionInfo
+      })
+    console.log('VIDEO DETAILS',sub.video)
       senddata.push(sub || [])
     }
   }
@@ -740,7 +766,7 @@ router.post('/dashboardvideolist', async (req, res) => {
 router.post('/videolist', async (req, res) => {
   const pool = await poolPromise;
   const request = await pool.request();
-  let thumb = `SELECT cat1.cat_id,cat1.cat_name,cat2.sub_id,cat2.sub_name,vid.video_id,vid.video_link,vid.title,vid.description,vid.thumbnail,vid.likes,vid.dislikes,vid.views,vid.share,vid.vname,vid.rating,vid.rcount,vid.downloadcount FROM video_info as vid INNER JOIN cat_1_level_1 as cat1 on vid.cat_id = cat1.cat_id INNER JOIN cat_1_level_2 as cat2  on cat2.sub_id = vid.sub_id where [vstatus] ='A'`;
+  let thumb = `SELECT cat1.cat_id,cat1.cat_name,cat2.sub_id,cat2.sub_name,vid.video_id,vid.video_link,vid.title,vid.description,vid.thumbnail,vid.likes,vid.dislikes,vid.views,vid.share,vid.vname,vid.rating,vid.rcount,vid.downloadcount,vid.download_status FROM video_info as vid INNER JOIN cat_1_level_1 as cat1 on vid.cat_id = cat1.cat_id INNER JOIN cat_1_level_2 as cat2  on cat2.sub_id = vid.sub_id where [vstatus] ='A'`;
   let tres = await request.query(thumb);
   if (tres) {
     tres.map
@@ -785,9 +811,12 @@ router.post('/updatevinfo', async (req, res) => {
     let video_id = req.body.video_id ? req.body.video_id : "";
     let title = req.body.Title ? req.body.Title : "";
     let description = req.body.Description ? req.body.Description : "";
+    let catId = req.body.cat_id ? req.body.cat_id : "";
+    let subId = req.body.sub_id ? req.body.sub_id : "";
     // console.log("thumbnail", req.files.images)
     if (req.files.images == undefined) {
-      let updatepasswordquery = `UPDATE video_info SET [title] = '${title}', [description]= '${description}' WHERE [video_id]= ${video_id}`;
+      // let updatepasswordquery = `UPDATE video_info SET [title] = '${title}', [description]= '${description}' WHERE [video_id]= ${video_id}`;
+      let updatepasswordquery = `UPDATE video_info SET  [cat_id] = ${catId},[sub_id] = ${subId},  [title] = '${title}', [description]= '${description}' WHERE [video_id]= ${video_id}`;
       let response = await request.query(updatepasswordquery);
       if (response.rowsAffected) {
         res.status("200").json({ res: response.recordset, title: title, des: description });
@@ -796,7 +825,8 @@ router.post('/updatevinfo', async (req, res) => {
       }
     } else {
       let thumbnail = req.files.images[0].path;
-      let updatepasswordquery = `UPDATE video_info SET [title] = '${title}', [description]= '${description}', [thumbnail] ='${thumbnail}' WHERE [video_id]= ${video_id}`;
+      // let updatepasswordquery = `UPDATE video_info SET [title] = '${title}', [description]= '${description}', [thumbnail] ='${thumbnail}' WHERE [video_id]= ${video_id}`;
+      let updatepasswordquery = `UPDATE video_info SET  [cat_id] = ${catId},[sub_id] = ${subId}, [title] = '${title}', [description]= '${description}', [thumbnail] ='${thumbnail}' WHERE [video_id]= ${video_id}`;
       let response = await request.query(updatepasswordquery);
       if (response.rowsAffected) {
         res.status("200").json({ res: response.recordset, title: title, des: description });
@@ -1074,6 +1104,7 @@ router.post('/views', async (req, res) => {
 });
 
 router.post('/analytics', async (req, res) => {
+  console.log(req.protocol + '://' + req.headers.host + req.originalUrl)
   console.log("analytics api calling")
   const pool = await poolPromise;
   const request = await pool.request();
@@ -1081,11 +1112,11 @@ router.post('/analytics', async (req, res) => {
   let alldata = await request.query(data)
   let data1 = "select count(*) as tota_users from mobile_users"
   let alldata2 = await request.query(data1);
-  let data3 = "select count(*) as total_views from HeatMap"
+  let data3 = "select sum(views) as total_views from video_info"
   let alldata3 = await request.query(data3);
   if (alldata3.rowsAffected) {
     alldata.recordset.push(alldata2.recordset[0], alldata3.recordset[0])
-    console.log(alldata.recordset)
+    // console.log(alldata.recordset)
     res.status("200").json(alldata.recordset)
   } else {
     res.send('404')
@@ -1194,9 +1225,9 @@ router.post('/location', async (req, res) => {
     console.log(req.body)
   }
   console.log(lat, lng)
-  const query = `INSERT INTO HeatMap ([user_id],[video_link],[latitude],[longitude]) VALUES (${user_id}, '${video_id}','${lat}','${lng}')`;
+  const query = `INSERT INTO HeatMap ([user_id],[video_id],[latitude],[longitude]) VALUES (${user_id}, '${video_id}','${lat}','${lng}')`;
   const result = await request.query(query);
-  let sql = `SELECT views FROM video_info where [video_link] = ${video_id}`;
+  let sql = `SELECT views FROM video_info where [video_id] = ${video_id}`;
   let sqlres = await request.query(sql);
   console.log(sqlres)
   if (sqlres.rowsAffected > 0) {
@@ -1357,6 +1388,116 @@ router.post('/getcountrys', async (req, res, next) => {
   let roleresponse = await request.query(getcountrys);
   res.status("200").json(roleresponse.recordset);
 });
+
+
+// router.post('/chart', async (req, res) => {
+//   console.log("chart api calling")
+//   const pool = await poolPromise;
+//   const request = await pool.request();
+//   let data = "select * from dislike";
+//   let alldata = await request.query(data)
+//   let data1 = "select * from download";
+//   let alldata2 = await request.query(data1);
+//   let data3 = "select * from share";
+//   let alldata3 = await request.query(data3);
+//   let data4 = "select * from mobile_users";
+//   let alldata4 = await request.query(data4);
+//   let data5 = "select * from video_likes";
+//   let alldata5 = await request.query(data5);
+//   let data6 = "select * from views";
+//   let alldata6 = await request.query(data6);
+//   if (alldata6.rowsAffected) {
+//     // alldata.recordset.push(alldata2.recordset, alldata3.recordset,alldata4.recordset,alldata5.recordset,alldata6.recordset)
+//     // console.log(alldata.recordset)
+//     res.status("200").json({dislikes:alldata.recordset,download:alldata2.recordset,share:alldata3.recordset,mobile_users:alldata4.recordset,likes:alldata5.recordset,views:alldata6.recordset})
+//   } else {
+//     res.send('404')
+//   }
+// });
+router.post('/chart', async (req, res) => {
+  console.log("chart api calling")
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let data = "select created_date from dislike";
+  let alldata = await request.query(data)
+  let data1 = "select created_date from download";
+  let alldata2 = await request.query(data1);
+  let data3 = "select created_date from share";
+  let alldata3 = await request.query(data3);
+  let data4 = "select created_date from mobile_users";
+  let alldata4 = await request.query(data4);
+  let data5 = "select created_date from video_likes";
+  let alldata5 = await request.query(data5);
+  let data6 = "select created_date from views";
+  let alldata6 = await request.query(data6);
+  let data7 = "select created_date from qrcode";
+  let alldata7 = await request.query(data7);
+  if (alldata6.rowsAffected) {
+    // alldata.recordset.push(alldata2.recordset, alldata3.recordset,alldata4.recordset,alldata5.recordset,alldata6.recordset)
+    // console.log(alldata.recordset)
+    res.status("200").json({dislikes:alldata.recordset,
+      download:alldata2.recordset,
+      share:alldata3.recordset,
+      mobile_users:alldata4.recordset,
+      likes:alldata5.recordset,
+      views:alldata6.recordset,
+      QRcode:alldata7.recordset
+    })
+  } else {
+    res.send('404')
+  }
+});
+
+
+
+
+router.post('/QRcode', async (req, res) => {
+  console.log('QRcode calling')
+  const pool = await poolPromise;
+  const request = await pool.request();
+  let userId = req.body.userId ? req.body.userId : "";
+  let videoId = req.body.videoId ? req.body.videoId : "";
+  console.log(req.body)
+  let sql = `INSERT INTO qrcode ([mob_user_id],[video_id]) values (${userId},${videoId})`;
+  let sqlres = await request.query(sql);
+  if (sqlres.rowsAffected > 0) {
+    res.send('200')
+  } else {
+    res.send('error')
+  }
+});
+
+
+router.post('/sortByDate', async (req,res) => {
+  const pool = await poolPromise;
+  const request = await pool.request();
+console.log(req.body)
+  let data = `select * from dislike where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response = await request.query(data);
+  let data2 = `select * from download where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response2 = await request.query(data2);
+  let data3 = `select * from share where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response3 = await request.query(data3);
+  let data4 = `select * from mobile_users where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response4 = await request.query(data4);
+  let data5 = `select * from video_likes where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response5 = await request.query(data5);
+  let data6 = `select * from views where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response6 = await request.query(data6);
+  let data7 = `select * from qrcode where created_date between '${req.body.x}' and '${req.body.y}' `
+  let response7 = await request.query(data7);
+  
+
+    res.status("200").json({dislikes:response.recordset,
+      download:response2.recordset,
+      share:response3.recordset,
+      mobile_users:response4.recordset,
+      likes:response5.recordset,
+      views:response6.recordset,
+      QRcode:response7.recordset
+    })
+ 
+})
 
 
 module.exports = router;

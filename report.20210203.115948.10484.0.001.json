@@ -1,0 +1,389 @@
+
+{
+  "header": {
+    "reportVersion": 2,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20210203.115948.10484.0.001.json",
+    "dumpEventTime": "2021-02-03T11:59:48Z",
+    "dumpEventTimeStamp": "1612333788849",
+    "processId": 10484,
+    "threadId": null,
+    "cwd": "C:\\vicflix_prod",
+    "commandLine": [
+      "node",
+      "C:\\npm\\node_modules\\pm2\\lib\\ProcessContainerFork.js"
+    ],
+    "nodejsVersion": "v13.10.1",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "win32",
+    "componentVersions": {
+      "node": "13.10.1",
+      "v8": "7.9.317.25-node.29",
+      "uv": "1.34.2",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "79",
+      "nghttp2": "1.40.0",
+      "napi": "5",
+      "llhttp": "2.0.4",
+      "openssl": "1.1.1d",
+      "cldr": "36.0",
+      "icu": "65.1",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v13.10.1/node-v13.10.1-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v13.10.1/node-v13.10.1.tar.gz",
+      "libUrl": "https://nodejs.org/download/release/v13.10.1/win-x64/node.lib"
+    },
+    "osName": "Windows_NT",
+    "osRelease": "10.0.17763",
+    "osVersion": "Windows Server 2019 Datacenter",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz",
+        "speed": 2295,
+        "user": 808758640,
+        "nice": 0,
+        "sys": 451027843,
+        "idle": 12549277187,
+        "irq": 8241515
+      },
+      {
+        "model": "Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz",
+        "speed": 2295,
+        "user": 998129906,
+        "nice": 0,
+        "sys": 560143531,
+        "idle": 12250790015,
+        "irq": 8777796
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "Ethernet",
+        "internal": false,
+        "mac": "00:0d:3a:f2:44:fc",
+        "address": "fe80::3182:92b1:fecf:c223",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 9
+      },
+      {
+        "name": "Ethernet",
+        "internal": false,
+        "mac": "00:0d:3a:f2:44:fc",
+        "address": "10.0.0.4",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "Loopback Pseudo-Interface 1",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "Loopback Pseudo-Interface 1",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      }
+    ],
+    "host": "NovoSrv01"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x00007ff651a424a9",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff651a46959",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff651a457d8",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff651b6bb12",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff652399c3e",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff652381391",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff6522483ec",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff65225044b",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff652245933",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff6522440c4",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff652266194",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff651fc0541",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00007ff6527e358d",
+      "symbol": ""
+    },
+    {
+      "pc": "0x000001ecd2472b13",
+      "symbol": ""
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 75485184,
+    "totalCommittedMemory": 75485184,
+    "usedMemory": 67909736,
+    "availableMemory": 2129920720,
+    "memoryLimit": 2197553152,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 262144,
+        "capacity": 33040,
+        "used": 33040,
+        "available": 0
+      },
+      "new_space": {
+        "memorySize": 1048576,
+        "committedMemory": 1048576,
+        "capacity": 1047424,
+        "used": 1047424,
+        "available": 0
+      },
+      "old_space": {
+        "memorySize": 60436480,
+        "committedMemory": 60436480,
+        "capacity": 60075488,
+        "used": 53778752,
+        "available": 6296736
+      },
+      "code_space": {
+        "memorySize": 1740800,
+        "committedMemory": 1740800,
+        "capacity": 1648896,
+        "used": 1413248,
+        "available": 235648
+      },
+      "map_space": {
+        "memorySize": 1314816,
+        "committedMemory": 1314816,
+        "capacity": 1310544,
+        "used": 1037600,
+        "available": 272944
+      },
+      "large_object_space": {
+        "memorySize": 10633216,
+        "committedMemory": 10633216,
+        "capacity": 10596888,
+        "used": 10596888,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 49152,
+        "committedMemory": 49152,
+        "capacity": 2784,
+        "used": 2784,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 1047424,
+        "used": 0,
+        "available": 1047424
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 445.515,
+    "kernelCpuSeconds": 82.187,
+    "cpuConsumptionPercent": 0.02938,
+    "maxRss": 117829632,
+    "pageFaults": {
+      "IORequired": 235361185,
+      "IONotRequired": 0
+    },
+    "fsActivity": {
+      "reads": 132606,
+      "writes": 2037254
+    }
+  },
+  "libuv": [
+  ],
+  "workers": [
+  ],
+  "environmentVariables": {
+    "ALLUSERSPROFILE": "C:\\ProgramData",
+    "APPDATA": "C:\\Users\\novaadmin\\AppData\\Roaming",
+    "automation": "true",
+    "autorestart": "true",
+    "axm_actions": "",
+    "axm_dynamic": "[object Object]",
+    "axm_monitor": "[object Object]",
+    "axm_options": "[object Object]",
+    "ChocolateyInstall": "C:\\ProgramData\\chocolatey",
+    "CLIENTNAME": "SURF0817",
+    "CommonProgramFiles": "C:\\Program Files\\Common Files",
+    "CommonProgramFiles(x86)": "C:\\Program Files (x86)\\Common Files",
+    "CommonProgramW6432": "C:\\Program Files\\Common Files",
+    "COMPUTERNAME": "NovoSrv01",
+    "ComSpec": "C:\\windows\\system32\\cmd.exe",
+    "created_at": "1602078242692",
+    "dp0": "C:\\npm\\",
+    "DriverData": "C:\\Windows\\System32\\Drivers\\DriverData",
+    "env": "[object Object]",
+    "exec_interpreter": "node",
+    "exec_mode": "fork_mode",
+    "exit_code": "134",
+    "FPS_BROWSER_APP_PROFILE_STRING": "Internet Explorer",
+    "FPS_BROWSER_USER_PROFILE_STRING": "Default",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\novaadmin",
+    "instances": "1",
+    "instance_var": "NODE_APP_INSTANCE",
+    "kill_retry_time": "100",
+    "km_link": "false",
+    "LOCALAPPDATA": "C:\\Users\\novaadmin\\AppData\\Local",
+    "LOGONSERVER": "\\\\NovoSrv01",
+    "merge_logs": "true",
+    "name": "app",
+    "namespace": "default",
+    "NODE_APP_INSTANCE": "0",
+    "node_args": "",
+    "node_version": "13.10.1",
+    "NUMBER_OF_PROCESSORS": "2",
+    "OS": "Windows_NT",
+    "Path": "C:\\Python38\\Scripts\\;C:\\Python38\\;C:\\windows\\system32;C:\\windows;C:\\windows\\System32\\Wbem;C:\\windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\windows\\System32\\OpenSSH\\;C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn\\;C:\\Program Files (x86)\\Microsoft SQL Server\\130\\Tools\\Binn\\;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;C:\\Program Files\\Microsoft SQL Server\\130\\DTS\\Binn\\;C:\\Program Files (x86)\\Microsoft SQL Server\\150\\DTS\\Binn\\;C:\\Program Files\\nodejs\\;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\Microsoft\\Web Platform Installer\\;C:\\Program Files\\Git\\cmd;C:\\npm;C:\\Users\\novaadmin\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files (x86)\\WinSCP;",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JSE;.WSF;.WSH;.MSC;.PY;.PYW",
+    "PM2_HOME": "C:\\Users\\novaadmin\\.pm2",
+    "PM2_INTERACTOR_PROCESSING": "true",
+    "PM2_USAGE": "CLI",
+    "pmx": "true",
+    "pm_cwd": "C:\\vicflix_prod",
+    "pm_err_log_path": "C:\\Users\\novaadmin\\.pm2\\logs\\app-error.log",
+    "pm_exec_path": "C:\\vicflix_prod\\app.js",
+    "pm_id": "0",
+    "pm_out_log_path": "C:\\Users\\novaadmin\\.pm2\\logs\\app-out.log",
+    "pm_pid_path": "C:\\Users\\novaadmin\\.pm2\\pids\\app-0.pid",
+    "pm_uptime": "1610537673375",
+    "prev_restart_delay": "0",
+    "PROCESSOR_ARCHITECTURE": "AMD64",
+    "PROCESSOR_IDENTIFIER": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+    "PROCESSOR_LEVEL": "6",
+    "PROCESSOR_REVISION": "4f01",
+    "ProgramData": "C:\\ProgramData",
+    "ProgramFiles": "C:\\Program Files",
+    "ProgramFiles(x86)": "C:\\Program Files (x86)",
+    "ProgramW6432": "C:\\Program Files",
+    "PROMPT": "$P$G",
+    "PSModulePath": "C:\\Program Files\\WindowsPowerShell\\Modules;C:\\windows\\system32\\WindowsPowerShell\\v1.0\\Modules;C:\\Program Files (x86)\\Microsoft SQL Server\\130\\Tools\\PowerShell\\Modules\\",
+    "PUBLIC": "C:\\Users\\Public",
+    "restart_time": "2",
+    "SESSIONNAME": "RDP-Tcp#3",
+    "status": "launching",
+    "SystemDrive": "C:",
+    "SystemRoot": "C:\\windows",
+    "TEMP": "C:\\Users\\novaadmin\\AppData\\Local\\Temp\\2",
+    "TMP": "C:\\Users\\novaadmin\\AppData\\Local\\Temp\\2",
+    "treekill": "true",
+    "unique_id": "921e54cd-af35-489b-82a7-5ea4fc19eaa1",
+    "unstable_restarts": "0",
+    "USERDOMAIN": "NovoSrv01",
+    "USERDOMAIN_ROAMINGPROFILE": "NovoSrv01",
+    "username": "nnadmin",
+    "USERNAME": "novaadmin",
+    "USERPROFILE": "C:\\Users\\novaadmin",
+    "version": "0.0.0",
+    "versioning": "null",
+    "vizion": "true",
+    "vizion_running": "false",
+    "watch": "false",
+    "windir": "C:\\windows",
+    "windowsHide": "true",
+    "_prog": "node"
+  },
+  "sharedObjects": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "C:\\windows\\SYSTEM32\\ntdll.dll",
+    "C:\\windows\\System32\\KERNEL32.DLL",
+    "C:\\windows\\System32\\KERNELBASE.dll",
+    "C:\\windows\\System32\\WS2_32.dll",
+    "C:\\windows\\System32\\RPCRT4.dll",
+    "C:\\windows\\System32\\PSAPI.DLL",
+    "C:\\windows\\SYSTEM32\\dbghelp.dll",
+    "C:\\windows\\System32\\ADVAPI32.dll",
+    "C:\\windows\\System32\\msvcrt.dll",
+    "C:\\windows\\System32\\sechost.dll",
+    "C:\\windows\\System32\\USER32.dll",
+    "C:\\windows\\System32\\win32u.dll",
+    "C:\\windows\\System32\\GDI32.dll",
+    "C:\\windows\\System32\\gdi32full.dll",
+    "C:\\windows\\System32\\msvcp_win.dll",
+    "C:\\windows\\System32\\ucrtbase.dll",
+    "C:\\windows\\SYSTEM32\\USERENV.dll",
+    "C:\\windows\\System32\\profapi.dll",
+    "C:\\windows\\System32\\CRYPT32.dll",
+    "C:\\windows\\System32\\MSASN1.dll",
+    "C:\\windows\\System32\\bcrypt.dll",
+    "C:\\windows\\SYSTEM32\\WINMM.dll",
+    "C:\\windows\\SYSTEM32\\IPHLPAPI.DLL",
+    "C:\\windows\\SYSTEM32\\WINMMBASE.dll",
+    "C:\\windows\\System32\\cfgmgr32.dll",
+    "C:\\windows\\System32\\IMM32.DLL",
+    "C:\\windows\\System32\\powrprof.dll",
+    "C:\\windows\\SYSTEM32\\CRYPTBASE.DLL",
+    "C:\\windows\\System32\\bcryptPrimitives.dll",
+    "C:\\windows\\system32\\uxtheme.dll",
+    "C:\\windows\\System32\\combase.dll",
+    "C:\\windows\\system32\\mswsock.dll",
+    "C:\\windows\\System32\\kernel.appcore.dll",
+    "C:\\windows\\System32\\NSI.dll",
+    "C:\\windows\\SYSTEM32\\dhcpcsvc6.DLL",
+    "C:\\windows\\SYSTEM32\\dhcpcsvc.DLL",
+    "C:\\windows\\SYSTEM32\\DNSAPI.dll",
+    "C:\\windows\\system32\\napinsp.dll",
+    "C:\\windows\\System32\\winrnr.dll",
+    "C:\\windows\\system32\\NLAapi.dll",
+    "C:\\windows\\system32\\wshbth.dll",
+    "C:\\Windows\\System32\\rasadhlp.dll",
+    "C:\\windows\\System32\\fwpuclnt.dll"
+  ]
+}

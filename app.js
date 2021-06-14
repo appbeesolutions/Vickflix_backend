@@ -18,6 +18,7 @@ const fs = require("fs");
 var cors = require("cors");
 var flash = require('connect-flash');
 const session = require("express-session");
+const url = require('url')
 var cookieParser = require('cookie-parser');
 
 const expressJwt = require('express-jwt');
@@ -51,7 +52,10 @@ app.use(cookieParser("secret"));
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
   next();
 });
 
@@ -121,7 +125,7 @@ app.get('/terms', function(req, res) {
   })
   });
 app.get('*', (req, res) => {
-
+  
   // res.redirect('https://' + req.headers.host + req.url);
   if (allowedExt.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
     console.log("requested url", req.url)

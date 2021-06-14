@@ -1,21 +1,23 @@
 {
-  "name": "Online Video Streaming",
-  "port": 3300,
-  "httpsPort": 5000,
-  "path": "/beta_vicflix/public/videos/",
+  "name": "vicflix",
+  "port": 3399,
+  "httpsPort": 6000,
+  "path": "/vicflix_prod/public/videos/",
   "version": "v2.1.48",
     "server": "NovoSrv01\\SQLEXPRESS",
     "user": "webuser",
     "password": "Vicflix@123",
-    "database": "vicflix",
+    "database": "vicflix_prod",
   
   "app_link":"https://play.google.com/store",
   "app_link_ios":"https://www.apple.com/in/ios/app-store/",
-  "ch":"beta-vicflix",
+  "ch":"NovoNordiskIN",
   "secret": "",
-  "privatekey": "abhi",
+  "privatekey": "",
   "publickey" : "vicflix",
   "authkey": "",
   "gkey": "j8e3!X#7$4!8e?x",
-  "email_logo": ""
+  "expiresIn": "2h",
+  "host_link": "https://www.vicflix.com/#"
+  
 }
